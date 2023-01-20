@@ -73,7 +73,7 @@ You can display it using the command `tree -L 1`.
 └── storage
 ```
 
-Les répertoires racines sont oganisés par catégorie:
+Les répertoires racines sont oganisés par catégorie dont voici certaines détaillées :
 
 * Application            : apps
 * Base de données        : database
