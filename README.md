@@ -214,35 +214,17 @@ Tips :
 
 [Retour à table of content (2)](#table_of_content_2)
 
-Once **plugin.pm** is created and modes are declared in it, create modes in the **mode** directory:
-
-```shell
-
-  cd mode
-  touch mode1.pm
-
-```
-
-Then, edit mode1.pm to add **license terms** by copying it from an other mode. Don't forget to put your name at the end of it:
+Mode.pm as plugin.pm has also :
+* **license terms**
+* **package**
+* **libraries**
 
 ```perl
 
   # ...
   # Authors : <your name> <<your email>>
-
-```
-
-Next, describe your **package** name: it matches your mode directory.
-
-```perl
-
+  
   package path::to::plugin::mode::mode1;
-
-```
-
-Declare used libraries (always the same):
-
-```perl
 
   use strict;
   use warnings;
