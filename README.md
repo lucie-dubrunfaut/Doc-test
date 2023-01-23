@@ -158,13 +158,23 @@ Then the **package** name : path to your package. '::' instead of '/', and no .p
 package path::to::plugin;
 ```
 
-Used libraries (strict and warnings are mandatory). Centreon libraries are described later:
+Used libraries (strict and warnings are mandatory). 
 
 ```perl
 use strict;
 use warnings;
+```
+
+Centreon librarie :
+```perl
 use base qw(**centreon_library**);
 ```
+There are five kinds of centreon libraries here :
+* centreon::plugins::script_simple : General use case if no custom is needed
+* centreon::plugins::script_custom : Need custom directory - Can using both api or cli (command line)
+* centreon::plugins::script_snmp : If SNMP protocol is needed for this plugin
+* centreon::plugins::script_sql : If DB acess is needed for this plugin
+* centreon::plugins::script_wsman : Concern Windows specific protocols
 
 The plugin need a new constructor to instantiate the object:
 
