@@ -139,19 +139,14 @@ The snmp_standard/mode exists since the beginning when SNMP monitoring was much 
 
 [Retour à table of content (2)](#table_of_content_2)
 
-Une fois le dossier créé, ajouter le fichier du plugin à l'intérieur de celui-ci :
-```
-$ touch plugin.pm
-```
-
-Ensuite, éditer le fichier plugin.pm pour ajouter les **conditions de licence** en les copiant à partir d'un autre plugin. N'oubliez pas d'ajouter votre nom à la fin de celles-ci :
+First this file contains the Copyright section. At the end of it, you can add your author informations like this :
 
 ```
 # ...
 # Authors : <your name> <<your email>>
 ```
 
-Renseigner votre nom de **package** : il correspond au dossier de votre plugin.
+Then appears the **package** name : it matches your plugin directory.
 
 ```perl
 package path::to::plugin;
