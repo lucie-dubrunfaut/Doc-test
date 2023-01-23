@@ -6,8 +6,8 @@
 Table of contents (1)
  1. [Introduction](#introduction)
  2. [Architecture](#architecture)
- 3. [Référentiel des librairies centreon pluggin en commun](#librairies)
- 4. [Tutoriel de création d'un pluggin](#tutoriel)
+ 3. [List of shared libraries in centreon folder](#librairies)
+ 4. [Tutorial : How to create a plugin](#tutoriel)
  5. [Pluggins guidelines and good practices](#guidelines)
 *******
 
