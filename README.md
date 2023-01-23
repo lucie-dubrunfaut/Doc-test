@@ -89,9 +89,9 @@ Les répertoires racines sont oganisés par catégorie dont voici certaines dét
 Selon l'objet supervisé, il existe une organisation qui peut être utilisée :
 
 * Type
-* Constructeur
-* Modèle
-* Protocole de supervision
+* Constructor
+* Model
+* Monitoring Protocol
 
 Let's take a deeper look at the layout of the directory containing modes to monitor Linux
 systems through the command-line (`tree os/linux/local/ -L 1`). 
@@ -135,7 +135,7 @@ The snmp_standard/mode exists since the beginning when SNMP monitoring was much 
 
 <div id='architecture_plugin'/>
 
-### 3. Fichier plugin.mp
+### 3. File plugin.mp
 
 [Retour à table of content (2)](#table_of_content_2)
 
@@ -146,22 +146,23 @@ First this file contains the Copyright section. At the end of it, you can add yo
 # Authors : <your name> <<your email>>
 ```
 
-Then appears the **package** name : it matches your plugin directory.
+Then the **package** name : it matches your plugin directory.
 
 ```perl
 package path::to::plugin;
 ```
 
-Déclarer les bibliothèques utilisées (**strict** et **warnings** sont obligatoires). Les bibliothèques Centreon sont décrites par la suite :
+Used libraries (strict and warnings are mandatory). Centreon libraries are described later:
 
 ```perl
 use strict;
 use warnings;
 use base qw(**centreon_library**);
+```
 
-Le plugin a besoin d'un constructeur **new** pour instancier l'objet :
+The plugin need a new constructor to instantiate the object:
 
-.. code-block:: perl
+```perl
 
 sub new {
       my ($class, %options) = @_;
@@ -173,12 +174,12 @@ sub new {
       return $self;
 }
 ```
-La version du plugin doit être déclarée dans le constructeur **new** :
+Plugin version declaration is in the new constructor:
 
 ```perl
 $self->{version} = '0.1';
 ```
-Plusieurs modes peuvent être déclarés dans le constructeur **new** :
+Several modes can be declared in the new constructor:
 
 ```perl
 %{$self->{modes}} = (
@@ -187,12 +188,12 @@ Plusieurs modes peuvent être déclarés dans le constructeur **new** :
                       ...
                       );
 ```
-Ensuite, déclarer le module :
+Then, the module is declared:
 
 ```perl
 1;
 ```
-Une description du plugin est nécessaire pour générer la documentation :
+A description of the plugin is needed to generate the documentation:
 
 ```perl
 __END__
@@ -204,14 +205,186 @@ __END__
 =cut
 ```
 Tips : 
-* Vous pouvez copier/coller les éléments d'un autre plugin et adapter les lignes (paquets, arguments, ...).
-* Le plugin possède une extension ".pm" car c'est un module PERL. Par conséquent, ne pas oublier d'ajouter un **1;**.
+* You can copy-paste an other plugin.pm and adapt some lines (package, arguments...).
+* The plugin has ".pm" extension because it's a Perl module. So don't forget to add 1; at the end of the file.
 
 <div id='architecture_mode'/>
 
-### 4. Fichier mode.pm
+### 4. File mode.pm
 
 [Retour à table of content (2)](#table_of_content_2)
+
+Once **plugin.pm** is created and modes are declared in it, create modes in the **mode** directory:
+
+```shell
+
+  cd mode
+  touch mode1.pm
+
+```
+
+Then, edit mode1.pm to add **license terms** by copying it from an other mode. Don't forget to put your name at the end of it:
+
+```perl
+
+  # ...
+  # Authors : <your name> <<your email>>
+
+```
+
+Next, describe your **package** name: it matches your mode directory.
+
+```perl
+
+  package path::to::plugin::mode::mode1;
+
+```
+
+Declare used libraries (always the same):
+
+```perl
+
+  use strict;
+  use warnings;
+  use base qw(centreon::plugins::mode);
+
+```
+
+The mode needs a **new** constructor to instantiate the object:
+
+```perl
+
+  sub new {
+        my ($class, %options) = @_;
+        my $self = $class->SUPER::new(package => __PACKAGE__, %options);
+        bless $self, $class;
+
+        ...
+
+        return $self;
+  }
+
+```
+
+Mode version must be declared in the **new** constructor:
+
+```perl
+
+  $self->{version} = '1.0';
+
+```
+
+Several options can be declared in the **new** constructor:
+
+```perl
+
+  $options{options}->add_options(arguments => {
+      "option1:s" => { name => 'option1' },
+      "option2:s" => { name => 'option2', default => 'value1' },
+      "option3"   => { name => 'option3' },
+  });
+
+```
+
+Here is the description of arguments used in this example:
+
+* option1 : String value
+* option2 : String value with default value "value1"
+* option3 : Boolean value
+
+> **TIP** : You can have more informations about options format here: http://perldoc.perl.org/Getopt/Long.html
+
+The mode need a **check_options** method to validate options:
+
+```perl
+
+  sub check_options {
+    my ($self, %options) = @_;
+    $self->SUPER::init(%options);
+    ...
+  }
+
+```
+
+For example, Warning and Critical thresholds must be validate in **check_options** method:
+
+```perl
+
+  if (($self->{perfdata}->threshold_validate(label => 'warning', value => $self->{option_results}->{warning})) == 0) {
+       $self->{output}->add_option_msg(short_msg => "Wrong warning threshold '" . $self->{option_results}->{warning} . "'.");
+       $self->{output}->option_exit();
+  }
+  if (($self->{perfdata}->threshold_validate(label => 'critical', value => $self->{option_results}->{critical})) == 0) {
+       $self->{output}->add_option_msg(short_msg => "Wrong critical threshold '" . $self->{option_results}->{critical} . "'.");
+       $self->{output}->option_exit();
+  }
+
+```
+
+In this example, help is printed if thresholds do not have a correct format.
+
+Then comes the **run** method, where you perform measurement, check thresholds, display output and format performance datas.
+
+This is an example to check a SNMP value:
+
+```perl
+
+  sub run {
+    my ($self, %options) = @_;
+    $self->{snmp} = $options{snmp};
+    $self->{hostname} = $self->{snmp}->get_hostname();
+
+    my $result = $self->{snmp}->get_leef(oids => [$self->{option_results}->{oid}], nothing_quit => 1);
+    my $value = $result->{$self->{option_results}->{oid}};
+
+    my $exit = $self->{perfdata}->threshold_check(value => $value,
+                               threshold => [ { label => 'critical', 'exit_litteral' => 'critical' }, { label => 'warning', exit_litteral => 'warning' } ]);
+    $self->{output}->output_add(severity => $exit,
+                                short_msg => sprintf("SNMP Value is %s.", $value));
+
+    $self->{output}->perfdata_add(label => 'value', unit => undef,
+                                  value => $value,
+                                  warning => $self->{perfdata}->get_perfdata_for_output(label => 'warning'),
+                                  critical => $self->{perfdata}->get_perfdata_for_output(label => 'critical'),
+                                  min => undef, max => undef);
+
+    $self->{output}->display();
+    $self->{output}->exit();
+  }
+
+```
+
+In this example, we check a SNMP OID that we compare to warning and critical thresholds.
+There are the methods which we use:
+
+* get_leef        : get a SNMP value from an OID
+* threshold_check : compare SNMP value to warning and critical thresholds
+* output_add      : add output
+* perfdata_add    : add perfdata to output
+* display         : display output
+* exit            : exit
+
+Then, declare the module:
+
+```perl
+
+  1;
+
+```
+
+A description of the mode and its arguments is needed to generate the documentation:
+
+```perl
+
+  __END__
+
+  =head1 PLUGIN DESCRIPTION
+
+  <Add a plugin description here>.
+
+  =cut
+
+```
 
 <div id='librairies'/>
 
