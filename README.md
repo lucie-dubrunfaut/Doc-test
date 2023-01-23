@@ -139,6 +139,12 @@ The snmp_standard/mode exists since the beginning when SNMP monitoring was much 
 
 [Retour à table of content (2)](#table_of_content_2)
 
+This file must contain : 
+* license / copyright
+* package name
+* libraries
+* new constructor
+
 First this file contains the Copyright section. At the end of it, you can add your author informations like this :
 
 ```
@@ -146,7 +152,7 @@ First this file contains the Copyright section. At the end of it, you can add yo
 # Authors : <your name> <<your email>>
 ```
 
-Then the **package** name : it matches your plugin directory.
+Then the **package** name : path to your package. '::' instead of '/', and no .pm at the end.
 
 ```perl
 package path::to::plugin;
