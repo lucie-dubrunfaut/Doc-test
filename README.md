@@ -231,9 +231,13 @@ Tips :
 [Retour à table of content (2)](#table_of_content_2)
 
 Mode.pm as plugin.pm has also :
-* **license terms**
-* **package**
-* **libraries**
+* license / copyright
+* package name
+* libraries
+* new constructor
+
+But mode.pm needs also :
+* 
 
 ```perl
 
