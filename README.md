@@ -220,9 +220,8 @@ __END__
 
 =cut
 ```
-Tips : 
-* You can copy-paste an other plugin.pm and adapt some lines (package, arguments...).
-* The plugin has ".pm" extension because it's a Perl module. So don't forget to add 1; at the end of the file.
+> **TIP** : You can copy-paste an other plugin.pm and adapt some lines (package, arguments...).
+ The plugin has ".pm" extension because it's a Perl module. So don't forget to add 1; at the end of the file.
 
 <div id='architecture_mode'/>
 
@@ -236,8 +235,10 @@ Mode.pm as plugin.pm has also :
 * libraries
 * new constructor
 
-But mode.pm needs also :
-* 
+But mode.pm also needs at least :
+* options in the new constructor
+* check_options method
+* manage_selection method (called run in old contain)
 
 ```perl
 
@@ -250,12 +251,6 @@ But mode.pm needs also :
   use warnings;
   use base qw(centreon::plugins::mode);
 
-```
-
-The mode needs a **new** constructor to instantiate the object:
-
-```perl
-
   sub new {
         my ($class, %options) = @_;
         my $self = $class->SUPER::new(package => __PACKAGE__, %options);
@@ -265,7 +260,6 @@ The mode needs a **new** constructor to instantiate the object:
 
         return $self;
   }
-
 ```
 
 Mode version must be declared in the **new** constructor:
