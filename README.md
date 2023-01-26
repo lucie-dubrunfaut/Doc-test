@@ -1357,8 +1357,7 @@ La sortie affichera la liste des bases de données PostgreSQL.
 
 [Retour à table of content (1)](#table_of_content_1)
 
-
-## Set up your environment
+### 1.Set up your environment
 
 To use the centreon-plugins framework, you'll need the following: 
 
@@ -1366,41 +1365,38 @@ To use the centreon-plugins framework, you'll need the following:
 - The [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) command line utility
 - A [GitHub](https://github.com/) account.
 
-### Enable our standard repositories
+#### Enable our standard repositories
 
-<Tabs groupId="sync">
-<TabItem value="Debian 11" label="Debian 11">
+##### Debian
 
+If you have not already install lsb-release, first you need to follow this steps :
+
+If needed go to sudo mode
+```shell
+sudo -i
+```
+Install lib-release
+```shell
+apt install lsb-release
+```
+Create access to centreon repository (note you may need to change the version in example it's 22.04 but you can select one most up to date)
 ```shell
 echo "deb https://apt.centreon.com/repository/22.04/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/centreon.list
 wget -O- https://apt-key.centreon.com | gpg --dearmor | tee /etc/apt/trusted.gpg.d/centreon.gpg > /dev/null 2>&1
 ```
-
-</TabItem>
-<TabItem value="RHEL 8 and alike" label="RHEL 8 and alike">
-
-```shell
-dnf install -y https://yum.centreon.com/standard/22.04/el8/stable/noarch/RPMS/centreon-release-22.04-3.el8.noarch.rpm
-```
-
-</TabItem>
-</Tabs>
-
 Install the following dependencies: 
-
-<Tabs groupId="sync">
-<TabItem value="Debian 11" label="Debian 11">
-
 ```shell
 apt-get install 'libpod-parser-perl' 'libnet-curl-perl' 'liburi-encode-perl' 'libwww-perl' \
     'liblwp-protocol-https-perl' 'libhttp-cookies-perl' 'libio-socket-ssl-perl' 'liburi-perl' \
     'libhttp-proxypac-perl' 'libcryptx-perl' 'libjson-xs-perl' 'libjson-path-perl' \
     'libcrypt-argon2-perl' 'libkeepass-reader-perl' 
 ```
-
-</TabItem>
-<TabItem value="RHEL 8 and alike" label="RHEL 8 and alike">
-
+##### RHEL 8 and alike
+Create access to centreon repository (note you may need to change the version in example it's 22.04 but you can select one most up to date)
+```shell
+dnf install -y https://yum.centreon.com/standard/22.04/el8/stable/noarch/RPMS/centreon-release-22.04-3.el8.noarch.rpm
+```
+Install the following dependencies: 
 ```shell
 dnf install 'perl(Digest::MD5)' 'perl(Pod::Find)' 'perl-Net-Curl' 'perl(URI::Encode)' \
     'perl(LWP::UserAgent)' 'perl(LWP::Protocol::https)' 'perl(IO::Socket::SSL)' 'perl(URI)' \
@@ -1412,6 +1408,9 @@ dnf install 'perl(Digest::MD5)' 'perl(Pod::Find)' 'perl-Net-Curl' 'perl(URI::Enc
 
 
 
+
+
+TUTO 2020
 
 Premièrement, vous avez besoin de créer un dossier sur le git afin de stocker le nouveau plugin.
 
