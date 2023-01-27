@@ -1357,6 +1357,13 @@ La sortie affichera la liste des bases de données PostgreSQL.
 
 [Retour à table of content (1)](#table_of_content_1)
 
+All files showed in this tutorial can be found on the centreon-plugins GitHub in the 
+[tutorial](https://github.com/centreon/centreon-plugins/tree/develop/src/contrib/tutorial) **contrib** section.
+
+> You have to move the contents of `contrib/tutorial/apps/` to `apps/` if you want to run it for testing purposes.
+>
+> `cp -R contrib/tutorial/apps/* apps/`
+
 ### 1.Set up your environment
 
 To use the centreon-plugins framework, you'll need the following: 
@@ -1403,9 +1410,84 @@ dnf install 'perl(Digest::MD5)' 'perl(Pod::Find)' 'perl-Net-Curl' 'perl(URI::Enc
     'perl(HTTP::ProxyPAC)' 'perl-CryptX' 'perl(MIME::Base64)' 'perl(JSON::XS)' 'perl-JSON-Path' \
     'perl-KeePass-Reader' 'perl(Storable)' 'perl(POSIX)' 'perl(Encode)'
 ```
+### 2.Input
 
+**Context: simple JSON health API**
 
+In this tutorial, we will create a very simple probe checking an application's health
+displayed in JSON through a simple API.
 
+You can mockup an API with the free [mocky](https://designer.mocky.io/) tool.
+We created one for this tutorial, test it with `curl https://run.mocky.io/v3/da8d5aa7-abb4-4a5f-a31c-6700dd34a656`
+
+It returns the following output: 
+
+```json title="my-awesome-app health JSON" 
+{
+    "health": "yellow",
+    "db_queries":{
+         "select": 1230,
+         "update": 640,
+         "delete": 44
+    },
+    "connections":[
+      {
+        "component": "my-awesome-frontend",
+        "value": 122
+      },
+      {
+        "component": "my-awesome-db",
+        "value": 92
+      }
+    ],
+    "errors":[
+      {
+        "component": "my-awesome-frontend",
+        "value": 32
+      },
+      {
+        "component": "my-awesome-db",
+        "value": 27
+      }
+    ]
+}
+```
+
+### 3.Understand the data
+
+Understanding the data is very important as it will drive the way you will design
+the **mode** internals. This is the **first thing to do**, no matter what protocol you
+are using.
+
+There are several important properties for a piece of data:
+
+- Type of the data to process: string, int... There is no limitation in the kind of data you can process
+- Dimensions of the data, is it **global** or linked to an **instance**?
+- Data layout, in other words anticipate the kind of **data structure** to manipulate.
+
+In our example, the most common things are present. We can summarize it like that:
+
+- the `health` node is **global** data and is a string. Structure is a simple *key/value* pair
+- the `db_queries` node is a collection of **global** integer values about the database. Structure is a hash containing multiple key/value pairs
+- the `connections` node contains integer values (`122`, `92`) referring to specific **instances** (`my-awesome-frontend`, `my-awesome-db`). The structure is an array of hashes
+- `errors` is the same as `connections` except the data itself tracks errors instead of connections.
+
+Understanding this will be important to code it correctly.
+
+### 4.Create directories for a new plugin
+
+Create directories and files required for your **plugin** and **modes**. 
+
+Go to your centreon-plugins local git and create the appropriate directories and files:
+
+```shell
+# path to the main directory and the subdirectory containing modes
+mkdir -p src/apps/myawesomeapp/api/mode/
+# path to the main plugin file
+touch src/apps/myawesomeapp/api/plugin.pm
+# path to the specific mode(s) file(s)
+touch src/apps/myawesomeapp/api/mode/appsmetrics.pm
+```
 
 
 
